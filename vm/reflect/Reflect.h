@@ -19,6 +19,10 @@
 #ifndef DALVIK_REFLECT_REFLECT_H_
 #define DALVIK_REFLECT_REFLECT_H_
 
+int dvmInitInvocationHandler(Object* obj);
+bool dvmIsInvocationHandler(const ClassObject *clazz);
+ClassObject* dvmInterceptClass(ClassObject* clazz);
+
 /*
  * During startup, validate the "box" classes, e.g. java/lang/Integer.
  */

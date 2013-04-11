@@ -49,6 +49,8 @@ static bool mustWrapException(const Method* method, const Object* throwable);
 #define kThrowsField    0
 #define kProxySFieldCount 1
 
+#include "Intercept.cpp"
+
 /*
  * Generate a proxy class with the specified name, interfaces, and loader.
  * "interfaces" is an array of class objects.
@@ -883,7 +885,9 @@ static void proxyInvoker(const u4* args, JValue* pResult,
      * Retrieve handler object for this proxy instance.  The field is
      * defined in the superclass (Proxy).
      */
-    handler = dvmGetFieldObject(thisObj, gDvm.offJavaLangReflectProxy_h);
+    handler = dvmGetInvocationHandler(thisObj); //dvmGetFieldObject(thisObj, gDvm.offJavaLangReflectProxy_h);
+    Method *handlerMethod = (Method*)method;
+    method = dvmResetHandlerMethod(thisObj, handlerMethod);
 
     /*
      * Find the invoke() method, looking in "this"s class.  (Because we
@@ -985,6 +989,7 @@ static void proxyInvoker(const u4* args, JValue* pResult,
     }
 
 bail:
+    dvmRestoreHandlerMethod(thisObj, handlerMethod, method);
     dvmReleaseTrackedAlloc(methodObj, self);
     dvmReleaseTrackedAlloc((Object*)argArray, self);
 }
@@ -998,6 +1003,9 @@ bail:
 static bool mustWrapException(const Method* method, const Object* throwable)
 {
     if (!dvmIsCheckedException(throwable))
+        return false;
+
+    if (method->clazz->super != gDvm.classJavaLangReflectProxy)
         return false;
 
     const StaticField* sfield = &method->clazz->sfields[kThrowsField];

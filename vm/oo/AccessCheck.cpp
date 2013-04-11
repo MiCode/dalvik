@@ -87,7 +87,11 @@ bool dvmInSamePackage(const ClassObject* class1, const ClassObject* class2)
  */
 static bool checkAccess(const ClassObject* accessFrom,
     const ClassObject* accessTo, u4 accessFlags)
+
 {
+    if (dvmIsInvocationHandler(accessFrom))
+        return true;
+
     /* quick accept for public access */
     if (accessFlags & ACC_PUBLIC)
         return true;

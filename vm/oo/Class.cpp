@@ -4233,6 +4233,7 @@ bool dvmInitClass(ClassObject* clazz)
     dvmLockObject(self, (Object*) clazz);
     assert(dvmIsClassLinked(clazz) || clazz->status == CLASS_ERROR);
 
+    clazz = dvmInterceptClass(clazz);
     /*
      * If the class hasn't been verified yet, do so now.
      */

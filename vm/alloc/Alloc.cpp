@@ -191,6 +191,7 @@ Object* dvmAllocObject(ClassObject* clazz, int flags)
         DVM_OBJECT_INIT(newObj, clazz);
         dvmTrackAllocation(clazz, clazz->objectSize);   /* notify DDMS */
     }
+    dvmInitInvocationHandler(newObj);
 
     return newObj;
 }
